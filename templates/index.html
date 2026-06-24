@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>स्मार्ट सिंचाई प्रणाली</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@300;400;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green-dark:  #1a5c2e;
+      --green-mid:   #2e7d32;
+      --green-light: #4caf50;
+      --green-pale:  #e8f5e9;
+      --amber:       #f57f17;
+      --blue:        #1565c0;
+      --white:       #ffffff;
+      --gray-bg:     #f1f8f1;
+      --gray-200:    #dce8dc;
+      --gray-500:    #5a7a5a;
+      --text:        #1b2e1b;
+      --card-shadow: 0 2px 12px rgba(0,0,0,.10);
+    }
+
+    body {
+      font-family: 'Noto Sans Devanagari', 'Inter', sans-serif;
+      background: var(--gray-bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* HEADER */
+    header {
+      background: linear-gradient(135deg, var(--green-dark) 0%, var(--green-mid) 100%);
+      padding: 18px 20px 14px;
+      text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 3px 16px rgba(0,0,0,.25);
+    }
+    .header-top {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 4px;
+    }
+    .header-top .emoji { font-size: 1.8rem; }
+    .app-name {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1.2;
+    }
+    .app-sub {
+      font-size: .78rem;
+      color: #a5d6a7;
+      letter-spacing: .3px;
+    }
+    .header-badges {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 8px;
+      flex-wrap: wrap;
+    }
+    .badge {
+      background: rgba(255,255,255,.15);
+      color: #c8e6c9;
+      font-size: .72rem;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,.2);
+    }
+
+    /* LANG TOGGLE */
+    .lang-bar {
+      background: var(--green-dark);
+      display: flex;
+      justify-content: center;
+      gap: 0;
+      padding: 0 20px 10px;
+    }
+    .lang-btn {
+      padding: 5px 18px;
+      border: 1.5px solid rgba(255,255,255,.3);
+      background: transparent;
+      color: #a5d6a7;
+      font-size: .82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .2s;
+    }
+    .lang-btn:first-child { border-radius: 20px 0 0 20px; }
+    .lang-btn:last-child  { border-radius: 0 20px 20px 0; border-left: none; }
+    .lang-btn.active {
+      background: #fff;
+      color: var(--green-dark);
+      border-color: #fff;
+    }
+
+    /* MAIN */
+    .main {
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 16px 14px 80px;
+    }
+
+    /* CARD */
+    .card {
+      background: var(--white);
+      border-radius: 16px;
+      padding: 20px 18px;
+      box-shadow: var(--card-shadow);
+      margin-bottom: 16px;
+    }
+    .card-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--green-dark);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 2px solid var(--green-pale);
+      padding-bottom: 10px;
+    }
+
+    /* FORM */
+    .form-group { margin-bottom: 18px; }
+    label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: .83rem;
+      font-weight: 600;
+      color: var(--gray-500);
+      margin-bottom: 8px;
+    }
+    label .unit-tag {
+      background: var(--green-pale);
+      color: var(--green-dark);
+      font-size: .72rem;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-weight: 700;
+    }
+
+    /* SLIDER */
+    .slider-wrap {
+      position: relative;
+      padding: 4px 0 20px;
+    }
+    input[type=range] {
+      width: 100%;
+      height: 6px;
+      accent-color: var(--green-mid);
+      cursor: pointer;
+    }
+    .slider-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: .7rem;
+      color: #aaa;
+      margin-top: 2px;
+    }
+    .slider-val-bubble {
+      display: inline-block;
+      background: var(--green-mid);
+      color: #fff;
+      font-size: .88rem;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 20px;
+      margin-top: 6px;
+    }
+
+    /* SELECT */
+    select {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1.5px solid var(--gray-200);
+      border-radius: 12px;
+      font-size: .95rem;
+      font-family: inherit;
+      color: var(--text);
+      background: var(--gray-bg);
+      outline: none;
+      transition: border-color .2s;
+    }
+    select:focus { border-color: var(--green-mid); background: #fff; }
+
+    /* CROP GRID */
+    .crop-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .crop-btn {
+      padding: 12px 8px;
+      border: 2px solid var(--gray-200);
+      border-radius: 12px;
+      background: var(--gray-bg);
+      font-family: inherit;
+      font-size: .88rem;
+      font-weight: 600;
+      color: var(--gray-500);
+      cursor: pointer;
+      transition: all .2s;
+      text-align: center;
+    }
+    .crop-btn .crop-emoji { font-size: 1.5rem; display: block; margin-bottom: 4px; }
+    .crop-btn.selected {
+      border-color: var(--green-mid);
+      background: var(--green-pale);
+      color: var(--green-dark);
+    }
+
+    /* PREDICT BUTTON */
+    .btn-predict {
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(135deg, var(--green-light), var(--green-dark));
+      color: #fff;
+      border: none;
+      border-radius: 14px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      transition: transform .15s, box-shadow .15s;
+      box-shadow: 0 4px 16px rgba(46,125,50,.4);
+    }
+    .btn-predict:active { transform: scale(.98); }
+
+    /* ERROR */
+    .error-box {
+      display: none;
+      background: #ffebee;
+      border: 1.5px solid #ef9a9a;
+      border-radius: 10px;
+      padding: 12px 14px;
+      color: #c62828;
+      font-size: .85rem;
+      margin-top: 10px;
+    }
+
+    /* SPINNER */
+    .spinner {
+      display: none;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      padding: 28px;
+      color: var(--gray-500);
+      font-size: .9rem;
+    }
+    .spinner-ring {
+      width: 36px; height: 36px;
+      border: 4px solid var(--gray-200);
+      border-top-color: var(--green-mid);
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      flex-shrink: 0;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* RESULT */
+    #result-card { display: none; animation: fadeUp .4s ease; }
+    @keyframes fadeUp {
+      from { opacity:0; transform:translateY(20px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+
+    .result-hero {
+      border-radius: 14px;
+      padding: 24px 16px 18px;
+      text-align: center;
+      margin-bottom: 16px;
+    }
+    .result-hero.irrigate { background: linear-gradient(135deg,#e3f2fd,#bbdefb); border: 2px solid #1565c0; }
+    .result-hero.no-irr  { background: linear-gradient(135deg,#e8f5e9,#c8e6c9); border: 2px solid var(--green-light); }
+
+    .result-icon-big { font-size: 3.8rem; margin-bottom: 6px; }
+    .result-decision {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .irrigate .result-decision { color: #1565c0; }
+    .no-irr   .result-decision { color: var(--green-dark); }
+    .result-conf { font-size: .85rem; color: var(--gray-500); }
+
+    /* PROB BARS */
+    .prob-title {
+      font-size: .78rem;
+      font-weight: 700;
+      color: var(--gray-500);
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      margin-bottom: 12px;
+    }
+    .prob-row { margin-bottom: 12px; }
+    .prob-label-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: .85rem;
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+    .bar-track { height: 12px; background: var(--gray-200); border-radius: 8px; overflow: hidden; }
+    .bar-fill { height: 100%; border-radius: 8px; width: 0; transition: width 1s ease; }
+    .bar-fill.blue  { background: linear-gradient(90deg,#64b5f6,#1565c0); }
+    .bar-fill.green { background: linear-gradient(90deg,var(--green-light),var(--green-dark)); }
+
+    /* ADVICE */
+    .advice-item {
+      display: flex;
+      gap: 10px;
+      background: var(--green-pale);
+      border-left: 4px solid var(--green-mid);
+      border-radius: 0 10px 10px 0;
+      padding: 10px 12px;
+      margin-bottom: 8px;
+      font-size: .88rem;
+      line-height: 1.5;
+    }
+    .advice-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
+
+    /* EMPTY STATE */
+    .empty-state {
+      text-align: center;
+      padding: 32px 16px;
+      color: var(--gray-500);
+    }
+    .empty-icon { font-size: 3.5rem; margin-bottom: 10px; }
+    .empty-state p { font-size: .9rem; line-height: 1.6; }
+
+    /* BOTTOM INFO */
+    .info-strip {
+      background: var(--green-dark);
+      color: #a5d6a7;
+      text-align: center;
+      padding: 10px;
+      font-size: .78rem;
+      position: fixed;
+      bottom: 0;
+      left: 0; right: 0;
+      z-index: 50;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <span class="emoji">🌾</span>
+    <div>
+      <div class="app-name" id="h-title">स्मार्ट सिंचाई प्रणाली</div>
+      <div class="app-sub" id="h-sub">ML आधारित सिंचाई सहायक</div>
+    </div>
+  </div>
+  <div class="header-badges">
+    <span class="badge">🤖 Random Forest</span>
+    <span class="badge">📊 88% सटीकता</span>
+    <span class="badge">🚫 IoT नहीं</span>
+  </div>
+</header>
+
+<div class="lang-bar">
+  <button class="lang-btn active" onclick="setLang('hi')">हिंदी</button>
+  <button class="lang-btn" onclick="setLang('en')">English</button>
+</div>
+
+<div class="main">
+
+  <!-- INPUT CARD -->
+  <div class="card">
+    <div class="card-title">📋 <span id="t-input">खेत की जानकारी दर्ज करें</span></div>
+
+    <!-- Soil Moisture -->
+    <div class="form-group">
+      <label><span id="t-sm">मिट्टी की नमी</span><span class="unit-tag">0–100 %</span></label>
+      <div class="slider-wrap">
+        <input type="range" id="soil_moisture" min="0" max="100" value="40" oninput="updateSlider('soil_moisture','disp_sm','%')"/>
+        <div class="slider-labels"><span>0%</span><span>50%</span><span>100%</span></div>
+      </div>
+      <span class="slider-val-bubble" id="disp_sm">40%</span>
+    </div>
+
+    <!-- Temperature -->
+    <div class="form-group">
+      <label><span id="t-temp">तापमान</span><span class="unit-tag">0–60 °C</span></label>
+      <div class="slider-wrap">
+        <input type="range" id="temperature" min="0" max="60" value="30" oninput="updateSlider('temperature','disp_temp','°C')"/>
+        <div class="slider-labels"><span>0°C</span><span>30°C</span><span>60°C</span></div>
+      </div>
+      <span class="slider-val-bubble" id="disp_temp">30°C</span>
+    </div>
+
+    <!-- Humidity -->
+    <div class="form-group">
+      <label><span id="t-hum">हवा की नमी</span><span class="unit-tag">0–100 %</span></label>
+      <div class="slider-wrap">
+        <input type="range" id="humidity" min="0" max="100" value="50" oninput="updateSlider('humidity','disp_hum','%')"/>
+        <div class="slider-labels"><span>0%</span><span>50%</span><span>100%</span></div>
+      </div>
+      <span class="slider-val-bubble" id="disp_hum">50%</span>
+    </div>
+
+    <!-- Rainfall -->
+    <div class="form-group">
+      <label><span id="t-rain">बारिश (पिछले 24 घंटे)</span><span class="unit-tag">0–100 mm</span></label>
+      <div class="slider-wrap">
+        <input type="range" id="rainfall" min="0" max="100" value="5" oninput="updateSlider('rainfall','disp_rain','mm')"/>
+        <div class="slider-labels"><span>0mm</span><span>50mm</span><span>100mm</span></div>
+      </div>
+      <span class="slider-val-bubble" id="disp_rain">5mm</span>
+    </div>
+
+    <!-- Crop Type -->
+    <div class="form-group">
+      <label><span id="t-crop">फसल का प्रकार</span></label>
+      <div class="crop-grid">
+        <button class="crop-btn selected" data-crop="wheat" onclick="selectCrop(this)">
+          <span class="crop-emoji">🌾</span>
+          <span id="c-wheat">गेहूं</span>
+        </button>
+        <button class="crop-btn" data-crop="rice" onclick="selectCrop(this)">
+          <span class="crop-emoji">🍚</span>
+          <span id="c-rice">चावल</span>
+        </button>
+        <button class="crop-btn" data-crop="maize" onclick="selectCrop(this)">
+          <span class="crop-emoji">🌽</span>
+          <span id="c-maize">मक्का</span>
+        </button>
+        <button class="crop-btn" data-crop="vegetable" onclick="selectCrop(this)">
+          <span class="crop-emoji">🥦</span>
+          <span id="c-veg">सब्जी</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Day -->
+    <div class="form-group">
+      <label><span id="t-day">आज का दिन</span></label>
+      <select id="day_of_week">
+        <option value="monday"   id="d-mon">सोमवार</option>
+        <option value="tuesday"  id="d-tue">मंगलवार</option>
+        <option value="wednesday" id="d-wed">बुधवार</option>
+        <option value="thursday" id="d-thu">गुरुवार</option>
+        <option value="friday"   id="d-fri">शुक्रवार</option>
+        <option value="saturday" id="d-sat">शनिवार</option>
+        <option value="sunday"   id="d-sun">रविवार</option>
+      </select>
+    </div>
+
+    <button class="btn-predict" id="btn-predict" onclick="predict()">🔍 अनुमान लगाएं</button>
+    <div class="error-box" id="error-box"></div>
+  </div>
+
+  <!-- RESULT CARD -->
+  <div class="card" id="result-card">
+    <div class="card-title">📊 <span id="t-result">परिणाम</span></div>
+
+    <div class="spinner" id="spinner">
+      <div class="spinner-ring"></div>
+      <span id="t-loading">अनुमान लग रहा है...</span>
+    </div>
+
+    <div id="empty-state" class="empty-state">
+      <div class="empty-icon">🌱</div>
+      <p id="t-empty">ऊपर जानकारी भरें और <strong>अनुमान लगाएं</strong> बटन दबाएं।</p>
+    </div>
+
+    <div id="result-content" style="display:none">
+      <div class="result-hero" id="result-hero">
+        <div class="result-icon-big" id="r-icon"></div>
+        <div class="result-decision" id="r-label"></div>
+        <div class="result-conf" id="r-conf"></div>
+      </div>
+
+      <div class="prob-title" id="t-prob">संभावना</div>
+      <div class="prob-row">
+        <div class="prob-label-row">
+          <span>💧 <span id="t-irr-lbl">सिंचाई करें</span></span>
+          <span id="p-irr">0%</span>
+        </div>
+        <div class="bar-track"><div class="bar-fill blue" id="bar-irr"></div></div>
+      </div>
+      <div class="prob-row" style="margin-bottom:20px">
+        <div class="prob-label-row">
+          <span>✅ <span id="t-no-lbl">सिंचाई नहीं</span></span>
+          <span id="p-no">0%</span>
+        </div>
+        <div class="bar-track"><div class="bar-fill green" id="bar-no"></div></div>
+      </div>
+
+      <div class="prob-title" id="t-advice-title">सुझाव</div>
+      <div id="advice-list"></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="info-strip" id="info-strip">
+  🤖 ML Model | Random Forest | 88.25% सटीकता | कोई IoT नहीं, कोई CSV नहीं
+</div>
+
+<script>
+// ── Language Data ──────────────────────────────────────────
+const LANG = {
+  hi: {
+    'h-title':'स्मार्ट सिंचाई प्रणाली','h-sub':'ML आधारित सिंचाई सहायक',
+    't-input':'खेत की जानकारी दर्ज करें','t-sm':'मिट्टी की नमी',
+    't-temp':'तापमान','t-hum':'हवा की नमी','t-rain':'बारिश (पिछले 24 घंटे)',
+    't-crop':'फसल का प्रकार','t-day':'आज का दिन',
+    'btn-predict':'🔍 अनुमान लगाएं','t-result':'परिणाम',
+    't-loading':'अनुमान लग रहा है...','t-empty':'ऊपर जानकारी भरें और <strong>अनुमान लगाएं</strong> बटन दबाएं।',
+    't-prob':'संभावना','t-irr-lbl':'सिंचाई करें','t-no-lbl':'सिंचाई नहीं',
+    't-advice-title':'सुझाव',
+    'c-wheat':'गेहूं','c-rice':'चावल','c-maize':'मक्का','c-veg':'सब्जी',
+    'd-mon':'सोमवार','d-tue':'मंगलवार','d-wed':'बुधवार','d-thu':'गुरुवार',
+    'd-fri':'शुक्रवार','d-sat':'शनिवार','d-sun':'रविवार',
+    'info-strip':'🤖 ML Model | Random Forest | 88.25% सटीकता | कोई IoT नहीं',
+    'lbl-irr':'अभी सिंचाई करें 💧','lbl-no':'सिंचाई की जरूरत नहीं ✅',
+    'conf-pre':'विश्वास:',
+    advice: {
+      dry:'मिट्टी बहुत सूखी है — तुरंत पानी दें।',
+      adequate:'मिट्टी में पर्याप्त नमी है — पानी की जरूरत नहीं।',
+      hot:'तापमान बहुत अधिक है — शाम को सिंचाई करें।',
+      heavyrain:'भारी बारिश हुई है — सिंचाई रोकें, जलभराव का खतरा।',
+      lowhumid:'हवा बहुत शुष्क है — सिंचाई की आवृत्ति बढ़ाएं।',
+      default:'स्थितियां सामान्य हैं। रोज़ निगरानी करते रहें।'
+    }
+  },
+  en: {
+    'h-title':'Smart Irrigation System','h-sub':'ML-Based Irrigation Assistant',
+    't-input':'Enter Field Conditions','t-sm':'Soil Moisture',
+    't-temp':'Temperature','t-hum':'Humidity','t-rain':'Rainfall (last 24h)',
+    't-crop':'Crop Type','t-day':'Day of Week',
+    'btn-predict':'🔍 Predict Now','t-result':'Prediction Result',
+    't-loading':'Predicting...','t-empty':'Fill in the details above and press <strong>Predict Now</strong>.',
+    't-prob':'Probability','t-irr-lbl':'Irrigate','t-no-lbl':'No Irrigation',
+    't-advice-title':'Smart Advice',
+    'c-wheat':'Wheat','c-rice':'Rice','c-maize':'Maize','c-veg':'Vegetable',
+    'd-mon':'Monday','d-tue':'Tuesday','d-wed':'Wednesday','d-thu':'Thursday',
+    'd-fri':'Friday','d-sat':'Saturday','d-sun':'Sunday',
+    'info-strip':'🤖 Random Forest | 88.25% Accuracy | No IoT | No CSV',
+    'lbl-irr':'Irrigate Now 💧','lbl-no':'No Irrigation Needed ✅',
+    'conf-pre':'Confidence:',
+    advice: {
+      dry:'Soil is very dry — water immediately.',
+      adequate:'Soil moisture is adequate — no watering needed.',
+      hot:'High temperature — irrigate in the evening.',
+      heavyrain:'Heavy rainfall — hold irrigation, risk of waterlogging.',
+      lowhumid:'Low humidity — increase irrigation frequency.',
+      default:'Conditions look balanced. Monitor daily.'
+    }
+  }
+};
+
+let currentLang = 'hi';
+let selectedCrop = 'wheat';
+let lastAdviceKeys = [];
+
+function setLang(lang) {
+  currentLang = lang;
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector(`.lang-btn[onclick="setLang('${lang}')"]`).classList.add('active');
+  const L = LANG[lang];
+  for (const [id, val] of Object.entries(L)) {
+    if (id === 'advice') continue;
+    const el = document.getElementById(id);
+    if (!el) continue;
+    if (id === 't-empty' || id === 'info-strip') el.innerHTML = val;
+    else if (el.tagName === 'BUTTON') el.textContent = val;
+    else el.innerHTML = val;
+  }
+  // Re-render advice if visible
+  if (lastAdviceKeys.length) renderAdvice(lastAdviceKeys);
+}
+
+function updateSlider(id, dispId, unit) {
+  const val = document.getElementById(id).value;
+  document.getElementById(dispId).textContent = val + unit;
+}
+
+function selectCrop(btn) {
+  document.querySelectorAll('.crop-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  selectedCrop = btn.dataset.crop;
+}
+
+function renderAdvice(keys) {
+  lastAdviceKeys = keys;
+  const L = LANG[currentLang].advice;
+  const list = document.getElementById('advice-list');
+  list.innerHTML = '';
+  if (!keys.length) {
+    list.innerHTML = `<div class="advice-item"><span class="advice-icon">🌿</span>${L.default}</div>`;
+  } else {
+    keys.forEach(k => {
+      list.innerHTML += `<div class="advice-item"><span class="advice-icon">💡</span>${L[k]}</div>`;
+    });
+  }
+}
+
+async function predict() {
+  const L = LANG[currentLang];
+  const errorBox = document.getElementById('error-box');
+  errorBox.style.display = 'none';
+
+  // Show result card + spinner
+  document.getElementById('result-card').style.display = 'block';
+  document.getElementById('empty-state').style.display = 'none';
+  document.getElementById('result-content').style.display = 'none';
+  document.getElementById('spinner').style.display = 'flex';
+  document.getElementById('t-loading').innerHTML = L['t-loading'];
+
+  // Scroll to result
+  setTimeout(() => document.getElementById('result-card').scrollIntoView({behavior:'smooth',block:'start'}), 100);
+
+  const sm   = parseFloat(document.getElementById('soil_moisture').value);
+  const temp = parseFloat(document.getElementById('temperature').value);
+  const hum  = parseFloat(document.getElementById('humidity').value);
+  const rain = parseFloat(document.getElementById('rainfall').value);
+  const day  = document.getElementById('day_of_week').value;
+
+  try {
+    const res = await fetch('/predict', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        soil_moisture: sm, temperature: temp,
+        humidity: hum, rainfall: rain,
+        crop_type: selectedCrop, day_of_week: day
+      })
+    });
+    const data = await res.json();
+    document.getElementById('spinner').style.display = 'none';
+
+    if (data.error) {
+      errorBox.textContent = '⚠️ ' + data.error;
+      errorBox.style.display = 'block';
+      document.getElementById('empty-state').style.display = 'block';
+      return;
+    }
+
+    const isIrr = data.prediction === 1;
+    const hero  = document.getElementById('result-hero');
+    hero.className = 'result-hero ' + (isIrr ? 'irrigate' : 'no-irr');
+    document.getElementById('r-icon').textContent  = isIrr ? '💧' : '✅';
+    document.getElementById('r-label').textContent = isIrr ? L['lbl-irr'] : L['lbl-no'];
+    document.getElementById('r-conf').textContent  = L['conf-pre'] + ' ' + data.confidence + '%';
+
+    document.getElementById('p-irr').textContent = data.irrigate_prob + '%';
+    document.getElementById('p-no').textContent  = data.no_irr_prob  + '%';
+    setTimeout(() => {
+      document.getElementById('bar-irr').style.width = data.irrigate_prob + '%';
+      document.getElementById('bar-no').style.width  = data.no_irr_prob  + '%';
+    }, 80);
+
+    // Build advice key list
+    const keys = [];
+    if (sm < 30) keys.push('dry');
+    else if (sm > 70) keys.push('adequate');
+    if (temp > 38) keys.push('hot');
+    if (rain > 20) keys.push('heavyrain');
+    if (hum < 30) keys.push('lowhumid');
+    renderAdvice(keys);
+
+    document.getElementById('result-content').style.display = 'block';
+
+  } catch(e) {
+    document.getElementById('spinner').style.display = 'none';
+    document.getElementById('empty-state').style.display = 'block';
+    errorBox.textContent = '⚠️ Server se connection nahi mila. Flask run hai?';
+    errorBox.style.display = 'block';
+  }
+}
+</script>
+</body>
+</html>
